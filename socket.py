@@ -25,7 +25,5 @@ class dsockets:
 		   # read certain information from incoming message to pass to command proc
 
 
-		   time.sleep(1)
-
 	  def destroy(self):
 	  	self.s.close()
