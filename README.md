@@ -33,7 +33,11 @@ RESPONSE for STARTING a VM
 {
 	"error": false,
 	"vmID": "ubuntu_trusty64_12_1",
-	"boxID": "ubuntu_trusty64_12"
+	"boxID": "ubuntu_trusty64_12",
+	"box": "ubuntu/trusty64",
+	"IP": "192.168.33.12",
+	"hostname": "ubuntu_trusty64_12_1.example.com",
+	"message": "started VM ubuntu_trusty64_12_1 successfully"
 }
 
 REQUEST to STOP a VM
@@ -44,11 +48,54 @@ REQUEST to STOP a VM
 
 RESPONSE for STOPPING a VM
 {
-	"error": false
+	"error": false,
+	"vmID": "ubuntu_trusty64_12_1",
+	"boxID": "ubuntu_trusty64_12",
+	"message": "shutdown VM ubuntu_trusty64_12_1 successfully"
 }
 ```
 
 In a similar fashion you can query information about any no of `boxes` or `VMs` at any time. It will send all required information about a VM in JSON format. 
+
+```json
+Request info on all active VMS
+{
+	"command": "info",
+	"subcommand": "VM all"
+}
+
+Response
+{
+	"error": "false",
+	"message": "listed information on 3 active VMs",
+	"VMS": [
+		{
+			"vmID": "ubuntu_trusty64_12_1",
+			"boxID": "ubuntu_trusty64_12",
+			"box": "ubuntu/trusty64",
+			"IP": "192.168.33.12",
+			"hostname": "ubuntu_trusty64_12_1.example.com"
+		},
+		{
+			"vmID": "ubuntu_trusty64_12_2",
+			"boxID": "ubuntu_trusty64_12",
+			"box": "ubuntu/trusty64",
+			"IP": "192.168.33.33",
+			"hostname": "ubuntu_trusty64_12_2.example.com"
+		},
+		{
+			"vmID": "ubuntu_presise64_3_1",
+			"boxID": "ubuntu_presise64_3",
+			"box": "ubuntu/presise64",
+			"IP": "192.168.33.15",
+			"hostname": "ubuntu_presise64_3_1.example.com"
+		}
+	]
+}
+
+
+You can also `destroy` or `halt` or `shutdown` all active VMs at once. Just send `destroy all` command or similar ones.
+```
 
 ###TODO
  - Implement this daemon first
