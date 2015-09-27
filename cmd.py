@@ -186,6 +186,19 @@ class commandproc:
         with open(path, 'w') as f:
             f.write(data)
 
+    def Start(self, c):
+        mesg = c.recv(self.BUFFSIZE)
+        jmesg = None
+        try:
+            jmesg = json.loads(mesg)
+        except Exception as inst:
+            print ("Invalid JSON command sent from client! Message looks like:\n %s ") % mesg
+            self.c.close()
+            return
+
+        self.classifier(jmesg)
+
+
     def classifier(self, command):
         args = command.split(' ')
 
@@ -594,12 +607,16 @@ class commandproc:
         %s""" % (time.time(), self.outPipe)
 
     # Constructor: Calls the classifier method in new thread
-    def __init__(self, command, ip, domain):
+    def __init__(self, c, addr):
+        self.BUFFSIZE = 4096
+
         self.currentPath = os.path.dirname(os.path.realpath(__file__))
         self.lock = threading.Lock()
 
-        self.privateIP = ip
-        self.domain = domain
+        self.c = c
 
-        thrd = Thread(target=self.classifier, args=(command, ))
+        # self.privateIP = ip
+        # self.domain = domain
+
+        thrd = Thread(target=self.Start, args=(c, ))
         thrd.start()

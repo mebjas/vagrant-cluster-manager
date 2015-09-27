@@ -4,12 +4,11 @@ import time
 import os
 import re
 from daemon import daemon
-from pipes import dpipes
+from dsocket import dsockets
 
 # define all paths required
 currentPath = os.path.dirname(os.path.realpath(__file__))
 pidFilePath = currentPath + "/tmp/process.pid"
-pipePath = currentPath + "/tmp/pipe"
 logfilePath = currentPath + "/tmp/logs"
 errfilePath = currentPath + "/tmp/err"
 domainName = None
@@ -23,23 +22,17 @@ class vagrantpyd(daemon):
         # Define event listener for named pipe here
         # Currently writing to temp code to test daemon for now
         try:
-            print "domainName = %s" % domainName
-            mypipe = dpipes(pipePath, domainName)
-            mypipe.create()
+            mysock = dsockets()
+            mysock.create()
         except Exception as inst:
             # TODO print correct exception message
-            print """[%s] Unable to create pipes required to communicate
-            with daemon.\nException: %s""" % (time.time(), inst)
+            print ("[%s] Unable to listen to sockets required to communicate with daemon.\nException: %s ") % (time.time(), inst)
             sys.exit(1)
 
     def _stop(self):
-        try:
-            mypipe = dpipes(pipePath, None)
-            mypipe.destroy()
-        except Exception, e:
-            # TODO print correct exception message
-            print "[%s] Unable to destroy pipes. Exception: %s" % (time.time(), e)
-            sys.exit(1)
+        print ("attempting to stop listening to socket.")
+        # TODO: Code to stop listening to socket, created by
+        # another instance of same program
 
 # Create a tmp directory if not exists
 # if required by the files needed
@@ -63,14 +56,12 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             # Code to check if config file exists
-            loadDomainInfo()
             print("Vagrant Cluster Manager Daemon starting ...")
             daemon.start()
         elif 'stop' == sys.argv[1]:
             print ("Vagrant Cluster Manager Daemon stopping ...")
             daemon.stop()
         elif 'restart' == sys.argv[1]:
-            loadDomainInfo()
             print ("Vagrant Cluster Manager Daemon restarting ...")
             daemon.restart()
         else:
